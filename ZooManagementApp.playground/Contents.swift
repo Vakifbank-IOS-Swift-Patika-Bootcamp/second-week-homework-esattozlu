@@ -1,16 +1,10 @@
 import UIKit
 
 protocol ZooCreator { // Protocol ✅
-    var waterLimit: Double { get set }
-    var budget: Double { get set }
-    var animals: [Animal]? { get set }
-    var keepers: [ZooKeeper]? { get set }
-    var remainingLimit: Double { get }
-    
     func addIncome(amount: Double)
     func addExpense(amount: Double)
     func getNewAnimal(animalType: AnimalTypes, animalBreed: String, waterConsumption: Double, sound: String, keeper: ZooKeeper, count: Int)
-    func hireZooKeeper(name: String, responsibleFor animals: [Animal], keeperId: Int, age: Int?)
+    func hireZooKeeper(keeper: ZooKeeper)
     func paySalary(completion: ([ZooKeeper]) -> ())
 }
 
@@ -66,10 +60,17 @@ class Animal {
         giveResponsibility()
     }
     
+    // Hayvan oluştuktan sonra belirtilen keeper a yetki verilir
     func giveResponsibility() {
         if var animals = keeper.animals {
-            animals.append(self)
-            keeper.animals = animals
+            animals.forEach{
+                if $0.animalBreed.lowercased() == animalBreed.lowercased() && $0.animalType == animalType{
+                    return
+                } else {
+                    animals.append(self)
+                }
+                keeper.animals = animals
+            }
         } else {
             var animals = [Animal]()
             animals.append(self)
@@ -79,20 +80,29 @@ class Animal {
 }
 
 
-class Zoo {
+class Zoo: ZooCreator {
+    // Propertylerime dışarıdan müdahale olması istenmediği için private tanımlandı.
     private var zooName: String
     private var waterLimit: Double
     private var budget: Double
-    private var animals: [Animal]?
+    var animals: [Animal]?
     private var keepers: [ZooKeeper]?
     private var remainingLimit: Double {    // computed property ✅
-        guard let animals = animals else { return 0 }
+        guard let animals = animals else { return waterLimit }
         var totalConsumption: Double = 0
         animals.forEach{ totalConsumption += $0.waterConsumption * Double($0.count)}
         return waterLimit - totalConsumption
     }
     
+    // Hayvanat bahçesini oluştururken başta hayvan ve bakıcıları vermeden, isim, su limiti ve bütçe ile init
+    init(zooName: String, waterLimit: Double, budget: Double) {
+        self.waterLimit     = waterLimit
+        self.budget         = budget
+        self.zooName        = zooName
+        print("\(zooName) Zoo is created with \(waterLimit) water limit, \(budget)₺ budget, \(animals?.count ?? 0) types of animal(s) and \(keepers?.count ?? 0) keeper(s).")
+    }
     
+    // Bütçe, su limiti, isim, hayvanlar ve bakıcıların belli olduğu durumda kullanılacak init
     init?(zooName: String, waterLimit: Double, budget: Double, animals: [Animal]?, keepers: [ZooKeeper]?) {
         var totalConsumption: Double = 0
         animals?.forEach{ totalConsumption += $0.waterConsumption * Double($0.count) }
@@ -107,15 +117,7 @@ class Zoo {
         self.animals        = animals
         self.keepers        = keepers
         self.zooName        = zooName
-        print("\(zooName) Zoo is created with \(animals?.count ?? 0) types of animal(s) and \(keepers?.count ?? 0) keeper(s).")
-    }
-    
-    
-    init(zooName: String, waterLimit: Double, budget: Double) {
-        self.waterLimit     = waterLimit
-        self.budget         = budget
-        self.zooName        = zooName
-        print("\(zooName) Zoo is created with \(animals?.count ?? 0) types of animal(s) and \(keepers?.count ?? 0) keeper(s).")
+        print("\(zooName) Zoo is created with \(waterLimit) water limit, \(budget)₺ budget, \(animals?.count ?? 0) types of animal(s) and \(keepers?.count ?? 0) keeper(s).")
     }
     
     // gelir eklemek için kullanılır
@@ -146,7 +148,7 @@ class Zoo {
     // Su limitini belirtilen miktarda arttırır eder
     func increaseWaterLimit(amount: Double) {
         waterLimit += amount
-        print("Water limit is increased to \(waterLimit)")
+        print("Water limit is increased by \(amount) to \(waterLimit)")
     }
     
     // maaşları öder
@@ -172,17 +174,19 @@ class Zoo {
     // yeni hayvan alır
     func getNewAnimal(animalType: AnimalTypes, animalBreed: String, waterConsumption: Double, sound: String, keeper: ZooKeeper, count: Int) {
         let animal = Animal(animalType: animalType, animalBreed: animalBreed, waterConsumption: waterConsumption, sound: sound, keeper: keeper, count: count)
+        
         guard animal.waterConsumption * Double(animal.count) <= remainingLimit else {
-            print("Remaining water limit of zoo is not enough to get this animal. Please increase the water limit at least \(animal.waterConsumption * Double(animal.count) - remainingLimit).")
+            print("Remaining water limit of zoo is not enough to get \(count) \(animalBreed). Please increase the water limit at least \(animal.waterConsumption * Double(animal.count) - remainingLimit).")
             return
         }
+        
         var breedCheck = true
         
         if var animals = animals {
             // Hayvan eklenirken, eklemek istenen türe ve tipe sahip daha önce bir hayvan olup olmadığı kontrolü.
             animals.forEach{
                 if $0.animalBreed.lowercased() == animalBreed.lowercased() && $0.animalType == animalType{
-                    print("There is already an animal with breed: \(animalBreed). Please call addToExisting function.")
+                    print("There is already an animal with type: \(animalType), breed: \(animalBreed). Please call addToExisting function.")
                     breedCheck = false
                     return
                 }
@@ -201,16 +205,15 @@ class Zoo {
         print("\(animal.animalType) type, \(animalBreed) breed animal is added.")
     }
     
-    // yeni bakıcı alır
-    func hireZooKeeper(name: String, keeperId: Int) {
-        var keeper = ZooKeeper(name: name, keeperId: keeperId)
+    // yeni bakıcı işe alır
+    func hireZooKeeper(keeper: ZooKeeper) {
         var idCheck = true
         
         if var keepers = keepers {
-            // Keeper eklenirken, eklemek istenen id'ye sahip daha önce bir çalışan olup olmadığı kontrolü.
+            // Keeper eklenirken, eklemek istenen id'ye sahip daha önce bir keeper olup olmadığı kontrolü.
             keepers.forEach{
-                if $0.keeperId == keeperId {
-                    print("There is already a keeper with id: \(keeperId). Please try another id.")
+                if $0.keeperId == keeper.keeperId {
+                    print("There is already a keeper with id: \(keeper.keeperId). Please try another id.")
                     idCheck = false
                     return
                 }
@@ -226,43 +229,78 @@ class Zoo {
             self.keepers = keepers
         }
         
-        print("Keeper \(name) is hired.")
+        print("Keeper \(keeper.name) is hired.")
     }
     
     
     func askRemainingWaterLimit() {
-        print("Remaining water limit: ", remainingLimit)
+        print("Remaining water limit:", remainingLimit)
     }
     
     
     
     func addToExisting(animalType: AnimalTypes, animalBreed: String, count: Int) {
-        guard let animals = animals else { return }
+        guard let animals = animals else {
+            print("There is no animal in the zoo. Please use getNewAnimal method.")
+            return
+        }
+        
+        var animalFound = false
+        
         for (index, animal) in animals.enumerated() {
+            
             if animalType == animal.animalType && animalBreed.lowercased() == animal.animalBreed.lowercased() {
+                
                 guard animal.waterConsumption * Double(count) <= remainingLimit else {
-                    print("There is not enough limit to add new animals. Please increase the water limit at least \(animal.waterConsumption * Double(count) - remainingLimit)")
+                    print("There is not enough water limit to add \(count) \(animalType) typed \(animalBreed). Please increase the water limit at least \(animal.waterConsumption * Double(count) - remainingLimit)")
                     return
                 }
+                
                 let previousCount = animals[index].count
                 animals[index].count += count
                 print("\(previousCount) \(animal.animalBreed) increased to \(animals[index].count).")
+                animalFound = true
                 break
             }
+        }
+        if !animalFound {
+            print("Type: \(animalType), breed: \(animalBreed) animal is not previosly defined. Please use getNewAnimal method.")
+            animalFound = false
         }
     }
 }
 
+// Hayvansız ve bakıcısız hayvanat bahçesi oluşturma
+
+let zoo1 = Zoo(zooName: "Ali Babanın Çiftliği", waterLimit: 25_000, budget: 1_000_000)
+zoo1.addExpense(amount: 400_000)        // Masraf girişi
+zoo1.addIncome(amount: 100_000)         // Gelir girişi
+zoo1.increaseWaterLimit(amount: 15_000) // Water limit'i 15_000 arttırır
+zoo1.reviseWaterLimit(limit: 50_000)    // Water limiti 50_000'e günceller
 let keeper1 = ZooKeeper(name: "Ali", keeperId: 1)
 let keeper2 = ZooKeeper(name: "Osman", keeperId: 2)
-let animal1 = Animal(animalType: .Mammals, animalBreed: "Inek", waterConsumption: 2000, sound: "Mö", keeper: keeper1, count: 2)
-let animal2 = Animal(animalType: .Birds, animalBreed: "Güvercin", waterConsumption: 20, sound: "Cik", keeper: keeper2, count: 5)
-let zoo = Zoo(zooName: "Ali Baba Çiftliği", waterLimit: 8100, budget: 2000, animals: [animal1, animal2], keepers: [keeper1, keeper2])
-zoo?.getNewAnimal(animalType: .Birds, animalBreed: "inek", waterConsumption: 2000, sound: "mö", keeper: keeper1, count: 2)
-zoo?.increaseWaterLimit(amount: 4000)
-zoo?.addToExisting(animalType: .Mammals, animalBreed: "inek", count: 2)
-zoo?.addExpense(amount: 1000)
-print(keeper1.animals?.count)
-print(keeper1.salary)
-print(keeper2.salary)
+let keeper3 = ZooKeeper(name: "Ahmet", keeperId: 2)
+zoo1.hireZooKeeper(keeper: keeper1)
+zoo1.hireZooKeeper(keeper: keeper2)
+zoo1.hireZooKeeper(keeper: keeper3)     // Aynı id'ye sahip keeper'ın eklenmesine izin vermez.
+zoo1.getNewAnimal(animalType: .Birds, animalBreed: "Deve Kuşu", waterConsumption: 4000, sound: "Guk", keeper: keeper1, count: 10)
+zoo1.getNewAnimal(animalType: .Mammals, animalBreed: "Deve", waterConsumption: 8000, sound: "Ooo", keeper: keeper2, count: 3)
+zoo1.increaseWaterLimit(amount: 14_000)
+zoo1.getNewAnimal(animalType: .Mammals, animalBreed: "Deve", waterConsumption: 8000, sound: "Ooo", keeper: keeper2, count: 3)
+zoo1.getNewAnimal(animalType: .Birds, animalBreed: "Deve Kuşu", waterConsumption: 400, sound: "Cak", keeper: keeper2, count: 1) // Aynı hayvanın yeniden eklenmesine izin vermiyor. Bunun yerine addToExisting'i çağırmamız gerektiğini yazıdırıyor.
+zoo1.addToExisting(animalType: .Birds, animalBreed: "Muhabbet kuşu", count: 20) // Mevcut hayvan grubuna olmayan hayvan verdiğimiz için uyarı verir
+zoo1.addToExisting(animalType: .Birds, animalBreed: "Deve Kuşu", count: 20)
+zoo1.increaseWaterLimit(amount: 70000)
+zoo1.askRemainingWaterLimit()           // Hayvanlar sonrasında geriye kalan su miktarını sorar
+zoo1.paySalary { zookeepers in
+    zookeepers.forEach{ print("\($0.name) keeper is responsible for \($0.animals?.count ?? 0) animals and get \($0.salary)₺ salary.")}
+}
 
+print("\n")
+
+//Hayvanlar ve bakıcılar önceden belli olduğu durumda hayvanat bahçesi oluşturma
+let keeper4 = ZooKeeper(name: "Ali", keeperId: 1)
+let animal1 = Animal(animalType: .Birds, animalBreed: "Deve Kuşu", waterConsumption: 10_000, sound: "Guk", keeper: keeper4, count: 2)
+let animal2 = Animal(animalType: .Mammals, animalBreed: "Deve", waterConsumption: 10_000, sound: "Ooo", keeper: keeper4, count: 2)
+let zoo2 = Zoo(zooName: "Atatürk Orman Çiftliği", waterLimit: 50_000, budget: 1_000_000, animals: [animal1, animal2], keepers: [keeper4])
+zoo2.
