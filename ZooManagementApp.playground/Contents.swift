@@ -152,6 +152,7 @@ class Zoo: ZooCreator {
         var totalConsumption: Double = 0
         animals?.forEach{ totalConsumption += $0.waterConsumption * Double($0.count) }
         
+        // Hayvanların toplam su tüketimi water limiti aşıp aşmadığı kontrolü
         guard waterLimit >= totalConsumption else {
             print("Total consumption(\(totalConsumption)) of animals is higher than Water Limit. Please increase Water Limit at least \(totalConsumption - waterLimit)")
             return nil
@@ -165,14 +166,14 @@ class Zoo: ZooCreator {
         print("\(zooName) Zoo is created with \(waterLimit) water limit, \(budget)₺ budget, \(animals?.count ?? 0) types of animal(s) and \(keepers?.count ?? 0) keeper(s).")
     }
     
-    // gelir eklemek için kullanılır
+    // Gelir eklemek için kullanılır
     func addIncome(amount: Double) {
         var previousBudget  = budget
         budget             += amount
         print("Income is added. Previos budget: \(previousBudget)₺, new budget: \(budget)₺")
     }
     
-    // gider eklemek için kullanılır
+    // Gider eklemek için kullanılır
     func addExpense(amount: Double) {
         // eğer budget'da yeterli para yoksa uyarı verir ve gider oluşmaz.
         if budget >= amount {
@@ -196,7 +197,7 @@ class Zoo: ZooCreator {
         print("Water limit is increased by \(amount) to \(waterLimit)")
     }
     
-    // maaşları öder
+    // Maaşları öder
     func paySalary(completion: ([ZooKeeper]) -> () = {_ in }) { // Closure ✅
         if let keepers = keepers, !keepers.isEmpty{
             var totalSalary: Double = 0
@@ -336,7 +337,7 @@ zoo1.addToExisting(animalType: .Birds, animalBreed: "Muhabbet kuşu", count: 20)
 zoo1.addToExisting(animalType: .Birds, animalBreed: "Deve Kuşu", count: 20)
 zoo1.increaseWaterLimit(amount: 70000)
 zoo1.askRemainingWaterLimit()           // Hayvanlar sonrasında geriye kalan su miktarını sorar
-zoo1.paySalary { zookeepers in
+zoo1.paySalary { zookeepers in // maaş ödemesi sonrası hangi bakıcı hangi hayvana bakıyor ve ne kadar maaş alıyor gibi bilgileri öğrenebilmek için completion
     zookeepers.forEach{ print("\($0.name) keeper is responsible for \($0.animals?.count ?? 0) animals and get \($0.salary)₺ salary.")}
 }
 
@@ -357,7 +358,6 @@ zoo2?.getNewAnimal(animalType: .Mammals, animalBreed: "Ayı", waterConsumption: 
 zoo2?.addIncome(amount: 200_000)
 zoo2?.addExpense(amount: 300_000)
 let keeper7 = ZooKeeper(name: "Mehmet", keeperId: 3)
-zoo2?.paySalary { zookeepers in
+zoo2?.paySalary { zookeepers in // maaş ödemesi sonrası hangi bakıcı hangi hayvana bakıyor ve ne kadar maaş alıyor gibi bilgileri öğrenebilmek için completion
     zookeepers.forEach{ print("\($0.name) keeper is responsible for \($0.animals?.count ?? 0) animals and get \($0.salary)₺ salary.")}
 }
-
