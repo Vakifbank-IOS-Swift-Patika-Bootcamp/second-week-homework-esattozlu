@@ -1,7 +1,7 @@
 # Second-Week-Homework
 
 ## 1. CompanyManagementApp İhtiyaçlar
---
+
 - Şirketimizin isim, çalışan, bütçe, kuruluş yılı olacak
 - Şirketimize playground arayüzünden gelir ekleyip gider çıkışı sağlayabilmeliyim.
 - Şirkete çalışan ekleyebilmeliyim.
@@ -14,7 +14,7 @@
 - Protocol, closure, optional kullanımı zorunludur.
  
  ## Proje
- --
+ 
  - CompanyManagementApp.playgorund, şirket ismi, kuruluş yılı, bütçe ve varsa çalışan parametreleriyle şirket oluşturduğumuz bir playground dosyasıdır. Kurduğumuz şirkete ister kuruluşta ister daha sonrasında çalışan eklenebilir veya çıkarılabilir, bütçeye gelir & gider eklenebilir ve bütçeden maaşlar ödenebilir.
 
 - Şirket kuruluşunda çalışan eklemek optional'dır (default değeri nil). Eğer şirket, çalışanlar ile oluşturulacaksa Company class'ı initilize edilmeden önce Employee class'ından çalışanları barındıran bir array oluşturulmalıdır. Bu array Company class'ının initializer'ında parametre olarak kullanılacaktır.
@@ -28,7 +28,7 @@
 - addIncome fonksiyonu ile bütçeye gelir, addExpense ile bütçeye gider eklenebilir.
 
 ### SUCCESS MESSAGES:
---
+
 - Şirket oluştuğunda: "\(name) Company is created in \(year) with \(employees?.count ?? 0) employee(s) and the budget of \(budget)₺"
 - Çalışan çıkarıldığında: "\(employee.name) with id: \(employee.id) is fired."
 - Çalışan eklendiğinde: "Employee \(name) is hired."
@@ -37,7 +37,7 @@
 - Maaşlar ödendiğinde: "\(totalSalary)₺ employee salaries are paid. Remaining budget: \(budget)₺."
 
 ### FAILURE MESSAGES:
---
+
 - Çalışan yokken çalışan çıkarmak istendiğinde: "There is no employee to fire."
 - Çalışan çıkarılırken verilen parametrelere uyan çalışan yoksa: "There is no \(name) with id: \(id) employee to fire."
 - Yeni çalışan eklenirken mevcut çalışana ait bir id denendiğinde: "There is already an employee with id: \(employeeId). Please try another id."
@@ -46,7 +46,7 @@
 - Çalışan yokken çalışan maaşı ödenmek istendiğinde: "There is no employee to pay salary."
 
 ## 2. ZooManagementApp İhtiyaçlar
---
+
 - Bahçemizde hayvanlarımız, bakıcılarımız olacak.
 - Hayvanat bahçemizin hem bir günlük su limiti hem de bit bütçesi olacak.
 - Hayvanat bahçesine gelir, gider eklemesi ve su limiti artırma yapılabilmelidir.
@@ -59,7 +59,7 @@
 - Protocol, closure, optional, computed property kullanımı zorunludur.
 
  ## Proje
- --
+ 
 - ZooManagementApp.playgorund, Hayvanat bahçesi yönetimi için oluşturulmuş bir playground dosyasıdır.
 
 - Hayvanat bahçesi, isim, su limiti ve bütçe ile oluşturulabilir. Daha sonra getNewAnimal ve hireZooKeeper methodlarıyla yeni hayvan ve bakıcı eklenebilir.
@@ -79,7 +79,7 @@
 - Kalan su limiti askRemainingWaterLimit methoduyla sorgulanabilir.
 
 - SUCCESS MESSAGES:
---
+
 - Hayvanat bahçesi oluştuğunda: "\(zooName) Zoo is created with \(waterLimit) water limit, \(budget)₺ budget."
 - waterLimit değiştirildiğinde: "Water limit is changed to \(waterLimit)"
 - waterLimit arttırıldığında: "Water limit is increased by \(amount) to \(waterLimit)"
@@ -92,7 +92,7 @@
 - Mevcut hayvana ekleme yapıldığında: "\(previousCount) \(animal.animalBreed) increased to \(animals[index].count)."
 
 - FAILURE MESSAGES:
---
+
 - Hayvan array'i ile hayvanat bahçesi oluşturulurken eğer hayvanların su tüketimi limitin üzerindeyse: "Total consumption(\(totalConsumption)) of animals is higher than Water Limit. Please increase Water Limit at least \(totalConsumption - waterLimit)"
 - Bütçede yeterli tutar yokken expense girilmek istendiğinde: "There is not enough money to pay expense. Please add income to budget case."
 - Çalışan maaşları ödenmek istendiğinde yeterli bütçe yoksa: "There is not enough money to pay salaries. Please add income to budget case."
