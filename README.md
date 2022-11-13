@@ -78,7 +78,7 @@
 
 - Kalan su limiti askRemainingWaterLimit methoduyla sorgulanabilir.
 
-- SUCCESS MESSAGES:
+### SUCCESS MESSAGES:
 
 - Hayvanat bahçesi oluştuğunda: "\(zooName) Zoo is created with \(waterLimit) water limit, \(budget)₺ budget."
 - waterLimit değiştirildiğinde: "Water limit is changed to \(waterLimit)"
@@ -91,7 +91,7 @@
 - Kalan su limiti sorgulandığında: "Remaining water limit:", remainingLimit
 - Mevcut hayvana ekleme yapıldığında: "\(previousCount) \(animal.animalBreed) increased to \(animals[index].count)."
 
-- FAILURE MESSAGES:
+### FAILURE MESSAGES:
 
 - Hayvan array'i ile hayvanat bahçesi oluşturulurken eğer hayvanların su tüketimi limitin üzerindeyse: "Total consumption(\(totalConsumption)) of animals is higher than Water Limit. Please increase Water Limit at least \(totalConsumption - waterLimit)"
 - Bütçede yeterli tutar yokken expense girilmek istendiğinde: "There is not enough money to pay expense. Please add income to budget case."
