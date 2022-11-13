@@ -1,6 +1,6 @@
 // MARK: - AÇIKLAMA
 
-// CompanyManagementApp.playgorund, şirket ismi, kuruluş yılı, bütçe ve varsa çalışan parametreleriyle şirket oluşturduğumuz, kurduğumuz şirkete ister kuruluşta ister daha sonrasında çalışan eklenebilir veya çıkarılabilir, bütçeye gelir & gider eklenebilir ve bütçeden maaşlar ödenebilir.
+// CompanyManagementApp.playgorund, şirket ismi, kuruluş yılı, bütçe ve varsa çalışan parametreleriyle şirket oluşturduğumuz bir playground dosyasıdır. Kurduğumuz şirkete ister kuruluşta ister daha sonrasında çalışan eklenebilir veya çıkarılabilir, bütçeye gelir & gider eklenebilir ve bütçeden maaşlar ödenebilir.
 
 // Şirket kuruluşunda çalışan eklemek optional'dır (default değeri nil). Eğer şirket, çalışanlar ile oluşturulacaksa Company class'ı initilize edilmeden önce Employee class'ından çalışanları barındıran bir array oluşturulmalıdır. Bu array Company class'ının initializer'ında parametre olarak kullanılacaktır.
 
@@ -162,12 +162,12 @@ class Company: CompanyCreator { // Protocol ✅
     
     // gider eklemek için kullanılır
     func addExpense(amount: Double) {
+        // eğer budget'da yeterli para yoksa uyarı verir ve gider oluşmaz.
         if budget >= amount {
             var previousBudget  = budget
             budget             -= amount
             print("Expense is added. Previos budget: \(previousBudget)₺, new budget: \(budget)₺")
         } else {
-            // eğer budget'da yeterli para yoksa uyarı verir ve gider oluşmaz.
             print("There is not enough money to pay expense. Please add income to budget case.")
         }
     }
@@ -191,7 +191,6 @@ class Company: CompanyCreator { // Protocol ✅
             print("There is no employee to pay salary.")
         }
     }
-        
 }
 
 
@@ -233,7 +232,6 @@ secondCompany.hireEmployee(name: "Veli", age: 27, maritalStatus: .single, title:
 secondCompany.addIncome(amount: 50_000)
 secondCompany.paySalary()
 secondCompany.addExpense(amount: 30_000)
-secondCompany.fireEmployee(employeeName: "esat", employeeId: 1)
 secondCompany.fireEmployee(employeeName: "ali", employeeId: 8)
 secondCompany.fireEmployee(employeeName: "veli", employeeId: 2)
 secondCompany.paySalary()

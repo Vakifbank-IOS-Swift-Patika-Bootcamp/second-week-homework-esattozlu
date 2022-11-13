@@ -1,23 +1,23 @@
+// MARK: - AÇIKLAMA
 // ZooManagementApp.playgorund, Hayvanat bahçesi yönetimi için oluşturulmuş bir playground dosyasıdır.
-// Hayvanat bahçesi oluşturmadan önce içerideki hayvanlar ve çalışanlar önceden belliyse hayvanat bahçesi ismi, su limiti, bütçe, hayvanlar ve çalışanları kullanarak hayvanat bahçesi oluşturulabilir.
-// Eğer belli değilse hayvanat bahçesi ismi, su limiti ve bütçe ile hayvanat bahçesi oluşturulabilir. Daha sonra getNewAnimal ve hireZooKeeper methodlarıyla yeni hayvan ve bakıcı eklenebilir.
+
+// Hayvanat bahçesi, isim, su limiti ve bütçe ile oluşturulabilir. Daha sonra getNewAnimal ve hireZooKeeper methodlarıyla yeni hayvan ve bakıcı eklenebilir.
 
 // getNewAnimal methodu sadece yeni hayvan oluşturulurken kullanılır. Eğer mevcut hayvan sayısını arttırmak istiyorsak getNewAnimal methodu daha önce bu hayvanın oluşturulduğuna dair uyarı verecektir. Bu durumda addToExisting methodu ile ekleme yapılmalıdır.
 
-// Yeni hayvan eklerken de, mevcuta ekleme yaparken de su limiti, hayvanların tüketimlerinden fazla olmalıdır. Eğer değilse uyarı alarak su limitinin en az ne kadar arttırılması gerektiği uyarısı alınır. Bu durumda eğer hayvanat bahçesi oluşturulmuş ise increaseWaterLimit ile istenen miktarda artış yapılabilir veya reviseWaterLimit ile toplam water limit değiştirilebilir. Eğer hayvanat bahçesi henüz oluşturulmadıysa init içerisine verilen water limit miktarı arttırılmalı.
+// Yeni hayvan eklerken de, mevcuta ekleme yaparken de su limiti, hayvanların tüketimlerinden fazla olmalıdır. Eğer değilse su limitinin en az ne kadar arttırılması gerektiği uyarısı alınır. Bu durumda increaseWaterLimit ile istenen miktarda artış yapılabilir veya reviseWaterLimit ile toplam water limit değiştirilebilir.
 
 // Bakıcı sayısı arttırılmak istenirse hireZooKeeper methodu kullanılabilir. Bakıcı eklerken id'nin mevcut bakıcı id'lerinden farklı olması gerekmektedir. Eğer aynı id'li çalışan eklenmeye çalışılırsa uyarı alınacaktır ve çalışan oluşturulamayacaktır.
 
 // addIncome methoduyla bütçeye gelir, addExpense methoduyla gider oluşturulabilir. Eğer gider bütçeden yüksek ise expense girişi yapılamaz ve uyarı alınır.
 
-// Çalışan maaşları baktıkları hayvan sayısına göre hayvan başına 0,05 prim hesabı ile yapılır. Baz maaş 7000₺'dir.
+// Çalışan maaşları baktıkları hayvan türü sayısına göre hayvan başına 0,05 prim katsayısı ile hesaplanır. Baz maaş 7000₺'dir.
 // paySalary methodu ile çalışan maaşları ödenebilir. Completion'ında ZooKeeper array döner. Bu array'den maaşlar ödendikten sonra kime ne kadar maaş ödenmiş, kaç hayvandan sorumlu gibi bilgiler öğrenilebilir.
 // Eğer maaş ödemesi için yeterli bütçe yoksa ödeme yapılamaz ve uyarı alınır.
 // Kalan su limiti askRemainingWaterLimit methoduyla sorgulanabilir.
 
 // SUCCESS MESSAGES:
-// Hayvanat bahçesi oluştuğunda: "\(zooName) Zoo is created with \(waterLimit) water limit, \(budget)₺ budget, \(animals?.count ?? 0) types of animal(s) and \(keepers?.count ?? 0) keeper(s)."
-// Çalışan çıkarıldığında: "\(employee.name) with id: \(employee.id) is fired."
+// Hayvanat bahçesi oluştuğunda: "\(zooName) Zoo is created with \(waterLimit) water limit, \(budget)₺ budget."
 // waterLimit değiştirildiğinde: "Water limit is changed to \(waterLimit)"
 // waterLimit arttırıldığında: "Water limit is increased by \(amount) to \(waterLimit)"
 // Gelir eklendiğinde: "Income is added. Previos budget: \(previousBudget)₺, new budget: \(budget)₺"
@@ -30,8 +30,6 @@
 
 // FAILURE MESSAGES:
 // Hayvan array'i ile hayvanat bahçesi oluşturulurken eğer hayvanların su tüketimi limitin üzerindeyse: "Total consumption(\(totalConsumption)) of animals is higher than Water Limit. Please increase Water Limit at least \(totalConsumption - waterLimit)"
-// Çalışan çıkarılırken verilen parametrelere uyan çalışan yoksa: "There is no \(name) with id: \(id) employee to fire."
-// Yeni çalışan eklenirken mevcut çalışana ait bir id denendiğinde: "There is already an employee with id: \(employeeId). Please try another id."
 // Bütçede yeterli tutar yokken expense girilmek istendiğinde: "There is not enough money to pay expense. Please add income to budget case."
 // Çalışan maaşları ödenmek istendiğinde yeterli bütçe yoksa: "There is not enough money to pay salaries. Please add income to budget case."
 // Çalışan yokken çalışan maaşı ödenmek istendiğinde: "There is no keeper to pay salary."
@@ -66,8 +64,8 @@ enum AnimalTypes {
 class ZooKeeper {
     let name: String
     var keeperId: Int
-    var animals: [Animal]?
-    // sorumlu olunan hayvan başına 0,05 kat sayısı ile maaş hesabı yapar(baz maaş: 7000₺)
+    var animals: [Animal]? // Optional ✅
+    // sorumlu olunan hayvan türü başına 0,05 kat sayısı ile maaş hesabı yapar(baz maaş: 7000₺)
     var salary: Double {    // computed property ✅
         if let animals = animals {
             return (1 + Double(animals.count) * 0.05) * 7000
@@ -130,8 +128,8 @@ class Zoo: ZooCreator {
     private var zooName: String
     private var waterLimit: Double
     private var budget: Double
-    var animals: [Animal]?
-    private var keepers: [ZooKeeper]?
+    var animals: [Animal]?  // Optional ✅
+    private var keepers: [ZooKeeper]?   // Optional ✅
     private var remainingLimit: Double {    // computed property ✅
         guard let animals = animals else { return waterLimit }
         var totalConsumption: Double = 0
@@ -139,31 +137,12 @@ class Zoo: ZooCreator {
         return waterLimit - totalConsumption
     }
     
-    // Hayvanat bahçesini oluştururken başta hayvan ve bakıcıları vermeden, isim, su limiti ve bütçe ile init
+    // Hayvanat bahçesi oluşturur
     init(zooName: String, waterLimit: Double, budget: Double) {
         self.waterLimit     = waterLimit
         self.budget         = budget
         self.zooName        = zooName
-        print("\(zooName) Zoo is created with \(waterLimit) water limit, \(budget)₺ budget, \(animals?.count ?? 0) types of animal(s) and \(keepers?.count ?? 0) keeper(s).")
-    }
-    
-    // Bütçe, su limiti, isim, hayvanlar ve bakıcıların belli olduğu durumda kullanılacak init
-    init?(zooName: String, waterLimit: Double, budget: Double, animals: [Animal]?, keepers: [ZooKeeper]?) {
-        var totalConsumption: Double = 0
-        animals?.forEach{ totalConsumption += $0.waterConsumption * Double($0.count) }
-        
-        // Hayvanların toplam su tüketimi water limiti aşıp aşmadığı kontrolü
-        guard waterLimit >= totalConsumption else {
-            print("Total consumption(\(totalConsumption)) of animals is higher than Water Limit. Please increase Water Limit at least \(totalConsumption - waterLimit)")
-            return nil
-        }
-        
-        self.waterLimit     = waterLimit
-        self.budget         = budget
-        self.animals        = animals
-        self.keepers        = keepers
-        self.zooName        = zooName
-        print("\(zooName) Zoo is created with \(waterLimit) water limit, \(budget)₺ budget, \(animals?.count ?? 0) types of animal(s) and \(keepers?.count ?? 0) keeper(s).")
+        print("\(zooName) Zoo is created with \(waterLimit) water limit, \(budget)₺ budget.")
     }
     
     // Gelir eklemek için kullanılır
@@ -316,7 +295,7 @@ class Zoo: ZooCreator {
     }
 }
 
-// Hayvansız ve bakıcısız hayvanat bahçesi oluşturma
+
 let zoo1 = Zoo(zooName: "Ali Babanın Çiftliği", waterLimit: 25_000, budget: 1_000_000)
 zoo1.addExpense(amount: 400_000)        // Masraf girişi
 zoo1.addIncome(amount: 100_000)         // Gelir girişi
@@ -329,35 +308,13 @@ zoo1.hireZooKeeper(keeper: keeper1)
 zoo1.hireZooKeeper(keeper: keeper2)
 zoo1.hireZooKeeper(keeper: keeper3)     // Aynı id'ye sahip keeper'ın eklenmesine izin vermez.
 zoo1.getNewAnimal(animalType: .Birds, animalBreed: "Deve Kuşu", waterConsumption: 4000, sound: "Guk", keeper: keeper1, count: 10)
-zoo1.getNewAnimal(animalType: .Mammals, animalBreed: "Deve", waterConsumption: 8000, sound: "Ooo", keeper: keeper2, count: 3)
-zoo1.increaseWaterLimit(amount: 14_000)
-zoo1.getNewAnimal(animalType: .Mammals, animalBreed: "Deve", waterConsumption: 8000, sound: "Ooo", keeper: keeper2, count: 3)
+zoo1.getNewAnimal(animalType: .Mammals, animalBreed: "Deve", waterConsumption: 8000, sound: "Ooo", keeper: keeper2, count: 3) // Yeterli su limiti olmadığı için ekleme yapılamaz
+zoo1.increaseWaterLimit(amount: 44_000)
+zoo1.getNewAnimal(animalType: .Mammals, animalBreed: "Deve", waterConsumption: 8000, sound: "Ooo", keeper: keeper2, count: 3) // Su limiti arttırıldıktan sonra 3 Deve hayvanat bahçesine eklenir
 zoo1.getNewAnimal(animalType: .Birds, animalBreed: "Deve Kuşu", waterConsumption: 400, sound: "Cak", keeper: keeper2, count: 1) // Aynı hayvanın yeniden eklenmesine izin vermiyor. Bunun yerine addToExisting'i çağırmamız gerektiğini yazıdırıyor.
-zoo1.addToExisting(animalType: .Birds, animalBreed: "Muhabbet kuşu", count: 20) // Mevcut hayvan grubuna olmayan hayvan verdiğimiz için uyarı verir
-zoo1.addToExisting(animalType: .Birds, animalBreed: "Deve Kuşu", count: 20)
-zoo1.increaseWaterLimit(amount: 70000)
+zoo1.addToExisting(animalType: .Birds, animalBreed: "Deve Kuşu", count: 5) // Mevcut Deve kuşu sayısı 5 arttırılır
+zoo1.addToExisting(animalType: .Birds, animalBreed: "Muhabbet kuşu", count: 20) // Mevcut hayvan ekleme methoduna, daha önce tanımlanmayan hayvan verdiğimiz için uyarı verir
 zoo1.askRemainingWaterLimit()           // Hayvanlar sonrasında geriye kalan su miktarını sorar
 zoo1.paySalary { zookeepers in // maaş ödemesi sonrası hangi bakıcı hangi hayvana bakıyor ve ne kadar maaş alıyor gibi bilgileri öğrenebilmek için completion
-    zookeepers.forEach{ print("\($0.name) keeper is responsible for \($0.animals?.count ?? 0) animals and get \($0.salary)₺ salary.")}
-}
-
-print("\n")
-
-//Hayvanlar ve bakıcılar önceden belli olduğu durumda hayvanat bahçesi oluşturma
-let keeper4 = ZooKeeper(name: "Ali", keeperId: 1)
-let animal1 = Animal(animalType: .Birds, animalBreed: "Deve Kuşu", waterConsumption: 10_000, sound: "Guk", keeper: keeper4, count: 2)
-let animal2 = Animal(animalType: .Mammals, animalBreed: "Deve", waterConsumption: 20_000, sound: "Ooo", keeper: keeper4, count: 2)
-let zoo2 = Zoo(zooName: "Atatürk Orman Çiftliği", waterLimit: 60_000, budget: 1_000_000, animals: [animal1, animal2], keepers: [keeper4])
-let keeper5 = ZooKeeper(name: "Osman", keeperId: 1)
-zoo2?.hireZooKeeper(keeper: keeper5) // Keeper4 ile aynı id verdiğim için uyarı bastırır
-let keeper6 = ZooKeeper(name: "Osman", keeperId: 2)
-zoo2?.hireZooKeeper(keeper: keeper6)
-zoo2?.getNewAnimal(animalType: .Mammals, animalBreed: "Ayı", waterConsumption: 30_000, sound: "Aaaa", keeper: keeper6, count: 2) // Water limit yetersiz uyarısı verir
-zoo2?.increaseWaterLimit(amount: 60000) // 2 adet ayı alabilmek için water limiti 60_000 arttırır
-zoo2?.getNewAnimal(animalType: .Mammals, animalBreed: "Ayı", waterConsumption: 30_000, sound: "Aaaa", keeper: keeper6, count: 2)
-zoo2?.addIncome(amount: 200_000)
-zoo2?.addExpense(amount: 300_000)
-let keeper7 = ZooKeeper(name: "Mehmet", keeperId: 3)
-zoo2?.paySalary { zookeepers in // maaş ödemesi sonrası hangi bakıcı hangi hayvana bakıyor ve ne kadar maaş alıyor gibi bilgileri öğrenebilmek için completion
     zookeepers.forEach{ print("\($0.name) keeper is responsible for \($0.animals?.count ?? 0) animals and get \($0.salary)₺ salary.")}
 }
